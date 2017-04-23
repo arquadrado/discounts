@@ -57,7 +57,7 @@
 						'type' => 'product_type', 	
 						'value' => 2,
 						'threshold' => '>',
-						'target' => null,
+						'target' => 'item|min',
 						'product_category' => 1,
 						'repeat' => false
 					],

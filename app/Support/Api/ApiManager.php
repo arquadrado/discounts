@@ -132,10 +132,45 @@ class ApiManager
 
 
 
-				$item = collect($order['items'])->filter(function ($item) use ($categoryId) {
+				$items = collect($order['items'])->filter(function ($item) use ($categoryId) {
 
 									return $this->belongsToCategory($categoryId, $item);
-								})->first();
+								});
+
+
+				if (!is_null($discount['trigger']['target'])) {
+					
+					$exploded = explode('|',$discount['trigger']['target']);
+
+					$targetValue = array_pop($exploded);
+
+					if ($targetValue === 'min') {
+
+						$item = $items->reduce(function ($reduced, $item) {
+
+							if (is_null($reduced)) {
+								$reduced = $item;
+								$reduced['total_quantity'] = 0;
+							}
+
+							$reduced = $reduced['unit-price'] < $item['unit-price'] ? $reduced : $item;
+
+
+							$reduced['total_quantity'] += $reduced['quantity'];
+
+							return $reduced;
+
+						}, null);
+					}
+
+				} else {
+
+					$item = $items->first();
+				}
+
+				if ($categoryId == 1) {
+					dd($item);
+				}
 
 
 				if ($discount['trigger']['repeat']) {
@@ -177,6 +212,7 @@ class ApiManager
 	public function belongsToCategory($categoryId, $item)
 	{
 		$products = config('orders.products');
+
 
 		foreach ($products as $product) {
 
