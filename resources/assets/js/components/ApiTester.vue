@@ -2,51 +2,48 @@
     <div class="container">
         <div class="row api-tester">
             <div class="col-xs-12">
-                <h1>API Tester</h1>
+                <h1><strong>API Tester</strong></h1>
             </div>
         </div>
         <div class="row api-tester-description">
             <div class="col-xs-12">
-                <h3>This is a simple page that allows to test the differente api routes</h3>
+                <h5>This is a simple page that allows to test the differente api routes</h5>
             </div>
         </div>
+        
         <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-               
+            <div class="col-xs-12">
+                <h3><strong>Endpoints</strong></h3>
             </div>
         </div>
+        <component v-for="endpoint in endpoints" :is="endpoint.name" :key="endpoint.name" :endpoint="endpoint"></component>
+
     </div>
 </template>
 
 <script>
 
-import products from '../mocks/data/products.json'
-import customers from '../mocks/data/customers.json'
-import orderOne from '../mocks/example-orders/order1.json'
-import orderTwo from '../mocks/example-orders/order2.json'
-import orderThree from '../mocks/example-orders/order3.json'
+import Discounts from './endpoints/Discounts.vue'
+
 
     export default {
+        components: {
+            'discounts': Discounts
+        },
         data: () => {
             return {
-                products: [],
-                customers: [],
-                orders: [],
+                endpoints: null
 
             }
         },
         mounted() {
-            this.products = products
-            this.customers = customers
-            this.orders.push(orderOne)
-            this.orders.push(orderTwo)
-            this.orders.push(orderThree)
-           /* $.post('/api/order', (response) => {
-                console.log(response, 'success')
+            $.get('/api/', (response) => {
+                this.endpoints = response 
             }).fail((response) => {
                 console.log(response, 'fail')
 
-            })*/
+            })
+
         }
     }
 </script>

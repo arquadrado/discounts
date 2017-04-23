@@ -14,5 +14,9 @@ use Illuminate\Http\Request;
 */
 
 
-Route::post('/discounts', 'Api\ApiController@checkDiscounts')->name('check-discounts');
+Route::get('/', 'Api\ApiController@availableEndpoints')->name('api-root');
+
+Route::post('/discounts', 'Api\ApiController@checkDiscounts')->name('discounts');
+
+
 

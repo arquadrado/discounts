@@ -11,3 +11,41 @@
 h1 {
 	color: orange;
 };
+
+.endpoint {
+	background-color: #fefefe;
+
+	.order {
+		margin-top: 20px;
+		cursor: pointer;
+	}
+
+	.active {
+		background-color: #f7f7f7;		
+	}
+
+	.toggle-order {
+		margin: 5px;
+	}
+
+	.compose-order {
+		margin-top: 20px;
+
+		.customers, .products {
+			margin-top: 15px;
+		}
+	}
+
+	.submit-order {
+		padding: 15px;
+		button {
+			width: 100%;
+		}
+
+		button:disabled {
+			cursor: not-allowed;
+			border: 2px solid crimson;
+		}
+	}
+
+}
