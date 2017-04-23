@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 
 Route::get('/', 'Api\ApiController@availableEndpoints')->name('api-root');
 
-Route::post('/discounts', 'Api\ApiController@checkDiscounts')->name('discounts');
+Route::post('/discounts', 'Api\ApiController@processOrder')->name('discounts');
 
 
 

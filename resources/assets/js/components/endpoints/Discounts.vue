@@ -134,6 +134,10 @@ import orderThree from '../../mocks/example-orders/order3.json'
                 }
 
                 return this.composedOrder['customer-id'] !== null && this.composedOrder['items'].length  
+            },
+
+            orderToSubmit () {
+                return this.selectOrder ? this.selectedOrder : this.composedOrder
             }
 
         },
@@ -179,14 +183,23 @@ import orderThree from '../../mocks/example-orders/order3.json'
             },
 
             submitOrder () {
-                $.post(this.endpoint.uri, (response) => {
+
+                $.ajax({
+                    url: this.endpoint.uri,
+                    method: this.endpoint.methods[0],
+                    data: {
+                        order: this.orderToSubmit
+                    } 
+                })
+                .done((response) => {
 
                     console.log(response, 'success') 
 
                     this.discount = response.discount
                     this.total = response.total
 
-                }).fail((response) => {
+                })
+                .fail((response) => {
 
                     console.log(response, 'fail')
 

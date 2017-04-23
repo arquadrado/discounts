@@ -40,12 +40,21 @@ class ApiController extends Controller
         return response()->json($endPoints, 200);
     }
 
-    public function checkDiscounts()
+    public function processOrder()
     {
-        return response()->json([
-            'message' => 'Cool',
-            'discount' => '20',
-            'total' => '100'
-        ], 200);
+        $order = request('order');
+
+        if (is_null($order)) {
+
+            return response()->json([
+                'message' => 'Something went wrong',
+            ], 500);            
+
+        }
+
+        $processedOrder = $this->apiManager->processOrder($order);
+
+
+        return response()->json($processedOrder['body'], $processedOrder['status']);
     }
 }

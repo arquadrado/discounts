@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 47);
+/******/ 	return __webpack_require__(__webpack_require__.s = 42);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1763,15 +1763,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mocks_data_products_json__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mocks_data_products_json__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mocks_data_products_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__mocks_data_products_json__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mocks_data_customers_json__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mocks_data_customers_json__ = __webpack_require__(51);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mocks_data_customers_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__mocks_data_customers_json__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mocks_example_orders_order1_json__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mocks_example_orders_order1_json__ = __webpack_require__(53);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mocks_example_orders_order1_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__mocks_example_orders_order1_json__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mocks_example_orders_order2_json__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mocks_example_orders_order2_json__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mocks_example_orders_order2_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__mocks_example_orders_order2_json__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mocks_example_orders_order3_json__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mocks_example_orders_order3_json__ = __webpack_require__(55);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mocks_example_orders_order3_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__mocks_example_orders_order3_json__);
 //
 //
@@ -1908,6 +1908,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
 
             return this.composedOrder['customer-id'] !== null && this.composedOrder['items'].length;
+        },
+        orderToSubmit: function orderToSubmit() {
+            return this.selectOrder ? this.selectedOrder : this.composedOrder;
         }
     },
 
@@ -1942,7 +1945,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         submitOrder: function submitOrder() {
             var _this = this;
 
-            $.post(this.endpoint.uri, function (response) {
+            $.ajax({
+                url: this.endpoint.uri,
+                method: this.endpoint.methods[0],
+                data: {
+                    order: this.orderToSubmit
+                }
+            }).done(function (response) {
 
                 console.log(response, 'success');
 
@@ -41566,6 +41575,22 @@ module.exports = function(module) {
 
 /***/ }),
 /* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(9);
+module.exports = __webpack_require__(10);
+
+
+/***/ }),
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */
 /***/ (function(module, exports) {
 
 module.exports = [
@@ -41590,7 +41615,7 @@ module.exports = [
 ];
 
 /***/ }),
-/* 43 */
+/* 52 */
 /***/ (function(module, exports) {
 
 module.exports = [
@@ -41627,7 +41652,7 @@ module.exports = [
 ];
 
 /***/ }),
-/* 44 */
+/* 53 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -41645,7 +41670,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 45 */
+/* 54 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -41663,7 +41688,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 46 */
+/* 55 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -41685,14 +41710,6 @@ module.exports = {
 	],
 	"total": "69.00"
 };
-
-/***/ }),
-/* 47 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(9);
-module.exports = __webpack_require__(10);
-
 
 /***/ })
 /******/ ]);
