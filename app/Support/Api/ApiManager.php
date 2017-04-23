@@ -137,6 +137,14 @@ class ApiManager
 									return $this->belongsToCategory($categoryId, $item);
 								});
 
+				$totalQuantity = $items->reduce(function ($total, $item) {
+
+					$total += $item['quantity'];
+
+					return $total;
+
+				}, 0);
+
 
 				if (!is_null($discount['trigger']['target'])) {
 					
@@ -150,13 +158,9 @@ class ApiManager
 
 							if (is_null($reduced)) {
 								$reduced = $item;
-								$reduced['total_quantity'] = 0;
 							}
 
 							$reduced = $reduced['unit-price'] < $item['unit-price'] ? $reduced : $item;
-
-
-							$reduced['total_quantity'] += $reduced['quantity'];
 
 							return $reduced;
 
@@ -168,25 +172,26 @@ class ApiManager
 					$item = $items->first();
 				}
 
-				if ($categoryId == 1) {
+				/*if ($categoryId == 1) {
 					dd($item);
-				}
+				}*/
 
 
 				if ($discount['trigger']['repeat']) {
 
 
-					$affectedItems = floor($item['quantity'] / ($discount['trigger']['value'] + 1));  
+					$affectedItems = floor($totalQuantity / ($discount['trigger']['value'] + 1));  
 
 
-					if ($item['quantity'] > $discount['trigger']['value']) {
+					if ($totalQuantity > $discount['trigger']['value']) {
 						return $item['unit-price'] * $affectedItems * $discount['value'] / 100; 
 					}
 
 					return 0;
 				}
 
-				if ($item['quantity'] > $discount['trigger']['value']) {
+				if ($totalQuantity > $discount['trigger']['value']) {
+					
 					return $item['unit-price'] * $discount['value'] / 100; 
 				}
 
