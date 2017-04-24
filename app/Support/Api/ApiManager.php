@@ -86,7 +86,13 @@ class ApiManager
 
 			if ($discountValue) {
 
-				$order['has_discount'] = !$discount->cumulative;
+				if (!array_key_exists('discounts', $order)) {
+					$order['discounts'] = [];
+				}
+
+				array_push($order['discounts'], $discount->description);
+
+				$order['has_discount'] = $discount->cumulative === 1 ? false : true;
 
 			}
 

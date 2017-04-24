@@ -2,7 +2,7 @@
     <div class="row endpoint">
         <div class="col-xs-12">
             <div class="row">
-                <div class="col-xs-8">
+                <div class="col-xs-6">
                     <div class="row">
                         <div class="col-xs-12">
                            <h4><strong>{{ `${endpoint['name']} - ${endpoint['uri']}` }}</strong></h4> 
@@ -35,9 +35,9 @@
                             <div class="row">
                                 <div class="col-xs-12">
                                     <label for="customers">Customers</label>
-                                    <select v-model="composedOrder['customer-id']" name="customers" id="customers">
+                                    <select v-model="selectedCustomer" name="customers" id="customers">
                                         <option value="">Select a customer</option>
-                                        <option v-for="customer in customers" :value="customer.id">{{ customer.name }}</option>
+                                        <option v-for="customer in customers" :value="customer">{{ customer.name }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -51,7 +51,8 @@
                                     </select>
                                 </div>
                                 <div class="col-xs-4">
-                                    <button @click="addProductToOrder">Add selected product</button>
+                                    <button :disabled="!hasSelectedProduct" @click="addProductToOrder">Add selected product</button>
+                                    <button  @click="resetProducts">Reset products</button>
                                 </div>
                             </div>
 
@@ -60,30 +61,23 @@
 
                 </div>
 
-                <div v-if="!selectOrder" class="col-xs-4">
-                    <h4>Composed Order</h4><br>
-                    <span>customer-id: {{ composedOrder['customer-id'] }}</span><br>
-                    <span>items: </span><br>
-                    <ul>
-                        <li v-for="item in composedOrder['items']">
-                            <span>{{ `${item.description} - ${item.price}` }}</span>
-                        </li>
-                    </ul>    
-                    <span>total: {{ composedOrder.total }}</span><br>
+                <div class="col-xs-6">
+                    <order :customer="selectedCustomer" :order="selectedOrder" :products="products"></order>
                 </div>
             </div>
 
             <div class="row submit-order">
-                <div class="col-xs-6">
+                <div class="col-xs-12">
                     <button @click="submitOrder" :disabled="!canSubmit">Submit order</button>
                 </div>
-                <div class="col-xs-3">
-                    <span><strong>Discount: </strong>{{ discount }}</span>
-                </div> 
-                <div class="col-xs-3">
-                    <span><strong>Total: </strong>{{ total }}</span>
-                </div>
             </div>
+
+            <div class="row response" v-if="response">
+                <div class="col-xs-12">
+                    <response :response="response"></response>
+                </div>    
+            </div>
+
         </div>
 
     </div>
@@ -97,9 +91,17 @@ import orderOne from '../../mocks/example-orders/order1.json'
 import orderTwo from '../../mocks/example-orders/order2.json'
 import orderThree from '../../mocks/example-orders/order3.json'
 
+import Order from './discounts/Order.vue'
+import Response from './discounts/Response.vue'
+
     export default {
 
         props: ['endpoint'],
+
+        components: {
+            'order': Order,
+            'response': Response,
+        },
 
         data: () => {
 
@@ -114,30 +116,29 @@ import orderThree from '../../mocks/example-orders/order3.json'
                 },
 
                 selectedProduct: null,
+                selectedCustomer: null,
 
                 products: [],
                 customers: [],
                 orders: [],
 
-                discount: 0,
-                total: 0
-
+                response: null
             }
         },
 
         computed: {
 
+            hasSelectedProduct () {
+                return this.selectedProduct !== null
+            },
+
             canSubmit () {
 
-                if (this.selectOrder) {
-                    return this.selectedOrder !== null
-                }
-
-                return this.composedOrder['customer-id'] !== null && this.composedOrder['items'].length  
+                return  this.selectedOrder !== null && this.selectedOrder['customer-id'] !== null && this.selectedOrder['items'].length  
             },
 
             orderToSubmit () {
-                return this.selectOrder ? this.selectedOrder : this.composedOrder
+                return this.selectedOrder
             }
 
         },
@@ -146,25 +147,69 @@ import orderThree from '../../mocks/example-orders/order3.json'
 
             toggleOrder () {
                 this.selectOrder = !this.selectOrder
+
+                this.selectedOrder = this.selectOrder ? null : this.composedOrder
+
+                if (this.response) {
+                    this.response = null
+                }
             },
 
             setSelectedOrder (order) {
 
                 this.selectedOrder = order
+                this.selectedCustomer = this.customers.reduce((reduced, customer) => {
+
+                    if (customer.id === order['customer-id']) {
+                        reduced = customer
+                    }   
+
+                    return reduced
+
+                }, null)
+
 
             },
 
             addProductToOrder () {
-                this.composedOrder['items'].push(this.selectedProduct)
 
-                this.composedOrder['total'] = this.composedOrder['items'].reduce((reduced, item) => {
+                let added = false
 
-                        reduced += Number(item.price)
+                this.selectedOrder['items'].forEach((item) => {
+
+                    if (item['product-id'] === this.selectedProduct.id) {
+
+                        item.quantity++ 
+                        item.total = Number(item.total) + Number(this.selectedProduct.price) 
+                        added = true
+
+                    }
+                })
+
+                if (!added) {
+
+                    this.selectedOrder['items'].push({
+                        'product-id': this.selectedProduct.id,
+                        'unit-price': this.selectedProduct.price,
+                        'quantity': 1,
+                        'total': this.selectedProduct.price
+                    })
+                }
+
+                
+
+                this.selectedOrder['total'] = this.selectedOrder['items'].reduce((reduced, item) => {
+
+                        reduced += Number(item.total)
 
                         return reduced
 
                 }, 0)
 
+            },
+
+            resetProducts () {
+                this.selectedOrder.items = []
             },
 
             removeProductFromOrder () {
@@ -191,21 +236,29 @@ import orderThree from '../../mocks/example-orders/order3.json'
                         order: this.orderToSubmit
                     } 
                 })
-                .done((response) => {
+                .done((response, status) => {
 
-                    console.log(response, 'success') 
+                    console.log(response, 'success', status) 
 
-                    this.discount = response.discount
-                    this.total = response.total
+                    this.response = response
+                    this.response.status = status
 
                 })
-                .fail((response) => {
+                .fail((response, status) => {
 
+                    this.response = response
+                    this.response.status = status
                     console.log(response, 'fail')
 
                 })
             }
 
+        },
+
+        watch: {
+            'selectedCustomer': function () {
+                this.selectedOrder['customer-id'] = this.selectedCustomer.id
+            }
         },
 
         mounted() {

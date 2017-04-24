@@ -114,7 +114,7 @@ class Discount extends Model {
 
         if ($this->repeat) {
 
-            $affectedItems = floor($totalQuantity / ($discount['trigger']['value'] + 1));
+            $affectedItems = floor($totalQuantity / ($this->trigger_value + 1));
 
         }
 

@@ -15,6 +15,31 @@ h1 {
 .endpoint {
 	background-color: #fefefe;
 
+	.final-order {
+
+		.products {
+			ul {
+				padding: 0;
+				list-style: none;
+			}
+		}
+	}
+
+	.response {
+		background-color: #fddddd;
+		.discounts {
+			padding: 10px;
+
+			.discount {
+				margin-top: 5px;
+			}
+		}
+	}
+
+	.success {
+		background-color: #e5ffdd;
+	}
+
 	.order {
 		margin-top: 20px;
 		cursor: pointer;
