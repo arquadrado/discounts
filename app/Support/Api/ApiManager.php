@@ -1,8 +1,9 @@
-<?php 
+<?php
 
 namespace App\Support\Api;
 
-use Illuminate\Routing\RouteCollection; 
+use App\Models\Discount;
+use Illuminate\Routing\RouteCollection;
 
 class ApiManager
 {
@@ -18,7 +19,7 @@ class ApiManager
 
 	public function __construct()
 	{
-		
+
 		$this->routes = collect(app()->routes->getRoutes())->filter(function ($route) {
 
 			return $route->action['prefix'] === 'api' && $route->uri !== 'api';
@@ -46,14 +47,14 @@ class ApiManager
 	public function processOrder($order)
 	{
 		try {
-			
-			$processedOrder['body'] = $this->applyDiscounts($order);			
-			$processedOrder['status'] = 200;			
+
+			$processedOrder['body'] = $this->applyDiscounts($order);
+			$processedOrder['status'] = 200;
 
 		} catch (\Exception $e) {
 
 			dd($e);
-			$processedOrder['body'] = $order;			
+			$processedOrder['body'] = $order;
 
 			$processedOrder['status'] = 500;
 
@@ -62,10 +63,11 @@ class ApiManager
 		return $processedOrder;
 	}
 
-	public function applyDiscounts($order) 
+	public function applyDiscounts($order)
 	{
 
-		$discounts = collect(config('orders.discounts.identifiers'));
+		//$discounts = collect(config('orders.discounts.identifiers'));
+		$discounts = Discount::where('active', 1)->get();
 
 		return $discounts->reduce(function ($order, $discount) {
 
@@ -75,14 +77,15 @@ class ApiManager
 
 			}
 
-
 			if (!array_key_exists('discount', $order)) {
 
 				$order['discount'] = 0;
 
 			}
 
-			$discountValue = $this->resolveDiscountType($discount, $order);
+
+			$discountValue = $discount->resolve($order);
+			//$discountValue = $this->resolveDiscountType($discount, $order);
 
 			if ($discountValue) {
 
@@ -93,7 +96,7 @@ class ApiManager
 
 			$order['discount'] += $discountValue;
 
-			return $order; 
+			return $order;
 
 		}, $order);
 
@@ -104,7 +107,7 @@ class ApiManager
 
 		switch ($discount['trigger']['type']) {
 
-			case 'customer_revenue': 
+			case 'customer_revenue':
 
 				$customer = collect(config('orders.customers'))->filter(function ($customer) use ($order) {
 
@@ -116,7 +119,7 @@ class ApiManager
 
 				if (floatval($customer['revenue']) >= floatval($discount['trigger']['value'])) {
 
-					return floatval($order['total']) * $discount['value'] / 100;  
+					return floatval($order['total']) * $discount['value'] / 100;
 
 				}
 
@@ -147,7 +150,7 @@ class ApiManager
 
 
 				if (!is_null($discount['trigger']['target'])) {
-					
+
 					$exploded = explode('|',$discount['trigger']['target']);
 
 					$targetValue = array_pop($exploded);
@@ -180,19 +183,19 @@ class ApiManager
 				if ($discount['trigger']['repeat']) {
 
 
-					$affectedItems = floor($totalQuantity / ($discount['trigger']['value'] + 1));  
+					$affectedItems = floor($totalQuantity / ($discount['trigger']['value'] + 1));
 
 
 					if ($totalQuantity > $discount['trigger']['value']) {
-						return $item['unit-price'] * $affectedItems * $discount['value'] / 100; 
+						return $item['unit-price'] * $affectedItems * $discount['value'] / 100;
 					}
 
 					return 0;
 				}
 
 				if ($totalQuantity > $discount['trigger']['value']) {
-					
-					return $item['unit-price'] * $discount['value'] / 100; 
+
+					return $item['unit-price'] * $discount['value'] / 100;
 				}
 
 				return 0;
@@ -201,13 +204,13 @@ class ApiManager
 
 				if (floatval($order['total']) >= floatval($discount['trigger']['value'])) {
 
-					return floatval($order['total']) * $discount['value'] / 100;  
+					return floatval($order['total']) * $discount['value'] / 100;
 
 				}
 
 				return 0;
 
-			default: 
+			default:
 
 				return 0;
 		}
