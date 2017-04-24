@@ -42,6 +42,7 @@ class Discount extends Model {
             return $this->$resolverName($order);
 
         } catch (\Exception $e) {
+            dd($e);
             return 0;
         }
 
@@ -61,17 +62,18 @@ class Discount extends Model {
 
     public function resolveProductType($order)
     {
-        $categoryId = $this->product_category;
+        $categoryId = $this->product_category_id;
 
         $items = collect($order['items'])->filter(function ($item) {
 
-            $product = Product::where('product_id', $item['id'])->first();
+            $product = Product::where('product_id', $item['product-id'])->first();
 
             if (is_null($product)) {
 
                 return false;
             }
-            return $product->category->id === $this->product_category;
+
+            return $product->category->id === $this->product_category_id;
         });
 
         $totalQuantity = $items->reduce(function ($total, $item) {
@@ -81,12 +83,11 @@ class Discount extends Model {
             return $total;
 
         }, 0);
+        
 
-        if (is_null($this->target)) {
+        $item = $items->first();
 
-            $item = $item->first();
-
-        } else {
+        if (!is_null($this->target)) {
 
             $exploded = explode('|', $this->target);
 
@@ -119,7 +120,7 @@ class Discount extends Model {
 
         if ($totalQuantity > $this->trigger_value) {
 
-            return $item['unit-price'] * $affectedItems * $discount['value'] / 100;
+            return $item['unit-price'] * $affectedItems * $this->value_in_percent / 100;
         }
 
         return 0;

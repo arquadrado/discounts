@@ -24,6 +24,7 @@ class CreateDiscountsTable extends Migration
             $table->string('target');
             $table->integer('product_category_id')->unsigned()->nullable();
             $table->integer('product_id')->unsigned()->nullable();
+            $table->boolean('repeat')->default(1);
             $table->boolean('cumulative')->default(0);
             $table->boolean('active')->default(1);
             $table->timestamps();
