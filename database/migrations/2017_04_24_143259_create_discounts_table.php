@@ -19,7 +19,7 @@ class CreateDiscountsTable extends Migration
             $table->string('description');
             $table->integer('value_in_percent')->unsigned();
             $table->string('type');
-            $table->integer('trigger_value')->unsigned();
+            $table->integer('trigger_value_in_cents')->unsigned();
             $table->string('threshold');
             $table->string('target');
             $table->integer('product_category_id')->unsigned()->nullable();

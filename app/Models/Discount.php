@@ -59,10 +59,99 @@ class Discount extends Model {
         return 0;
     }
 
+    public function resolveProductType($order)
+    {
+        $categoryId = $this->product_category;
+
+        $items = collect($order['items'])->filter(function ($item) {
+
+            $product = Product::where('product_id', $item['id'])->first();
+
+            if (is_null($product)) {
+
+                return false;
+            }
+            return $product->category->id === $this->product_category;
+        });
+
+        $totalQuantity = $items->reduce(function ($total, $item) {
+
+            $total += $item['quantity'];
+
+            return $total;
+
+        }, 0);
+
+        if (is_null($this->target)) {
+
+            $item = $item->first();
+
+        } else {
+
+            $exploded = explode('|', $this->target);
+
+            $targetValue = array_pop($exploded);
+
+            if ($targetValue === 'min') {
+
+                $item = $items->reduce(function ($reduced, $item) {
+
+                    if (is_null($reduced)) {
+                        $reduced = $item;
+                    }
+
+                    $reduced = $reduced['unit-price'] < $item['unit-price'] ? $reduced : $item;
+
+                    return $reduced;
+
+                }, null);
+            }
+
+        }
+
+        $affectedItems = 1;
+
+        if ($this->repeat) {
+
+            $affectedItems = floor($totalQuantity / ($discount['trigger']['value'] + 1));
+
+        }
+
+        if ($totalQuantity > $this->trigger_value) {
+
+            return $item['unit-price'] * $affectedItems * $discount['value'] / 100;
+        }
+
+        return 0;
+
+    }
+
+    public function resolveTotalValue($order)
+    {
+        if (floatval($order['total']) >= $this->trigger_value) {
+
+            return floatval($order['total']) * $discount->value_in_percent / 100;
+
+        }
+
+        return 0;
+    }
+
     /*
     ==========================================================================
        Mutators
     ==========================================================================
     */
+
+    public function getTriggerValueAttribute()
+    {
+        if ($this->type === 'product_type' || $this->type === 'product_type') {
+
+            return round($this->trigger_value_in_cents / 100);
+
+        }
+
+        return $this->trigger_value_in_cents / 100;
+    }
 
 }

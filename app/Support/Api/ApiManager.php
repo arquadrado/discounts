@@ -89,10 +89,9 @@ class ApiManager
 
 			if ($discountValue) {
 
-				$order['has_discount'] = !$discount['cumulative'];
+				$order['has_discount'] = !$discount->cumulative;
 
 			}
-
 
 			$order['discount'] += $discountValue;
 
