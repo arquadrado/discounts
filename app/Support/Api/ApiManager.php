@@ -66,7 +66,7 @@ class ApiManager
 	public function applyDiscounts($order)
 	{
 
-		$discounts = Discount::where('active', 1)->get();
+		$discounts = Discount::where('active', 1)->orderBy('priority', 'desc')->get();
 
 		return $discounts->reduce(function ($order, $discount) {
 
