@@ -65,23 +65,25 @@ class Discount extends Model {
 
     public function resolveProductType($order)
     {
-        $categoryId = $this->product_category_id;
 
-        $items = collect($order['items'])->filter(function ($item) {
+        $items = collect($order['items'])->filter(function ($item) use ($order) {
+
 
             $product = Product::where('product_id', $item['product-id'])->first();
+
 
             if (is_null($product)) {
 
                 return false;
             }
 
-            return $product->category->id === $this->product_category_id;
+            return $product->category->id == $this->product_category_id;
         });
+
 
         $totalQuantity = $items->reduce(function ($total, $item) {
 
-            $total += $item['quantity'];
+            $total = $total + (int)$item['quantity'];
 
             return $total;
 
@@ -121,21 +123,17 @@ class Discount extends Model {
 
         }
 
-        //dd($totalQuantity, $this->trigger_value, $this->threshold);
-
-        /*if ($this->resolveThreshold($totalQuantity, $this->trigger_value, $this->threshold)) {
+        if ($this->shouldTrigger($totalQuantity, $this->trigger_value, $this->threshold)) {
 
             return $item['unit-price'] * $affectedItems * $this->value;
 
-        }*/
+        }
 
-        //dd($totalQuantity, $this->trigger_value, $this->threshold);
-
-        if ($totalQuantity > $this->trigger_value) {
+        /*if ($totalQuantity > $this->trigger_value) {
 
             return $item['unit-price'] * $affectedItems * $this->value;
         }
-
+*/
         return 0;
 
     }
@@ -143,7 +141,7 @@ class Discount extends Model {
     public function resolveTotalValue($order)
     {
 
-        if ($this->resolveThreshold(floatval($order['total']), $this->trigger_value, $this->threshold)) {
+        if ($this->shouldTrigger(floatval($order['total']), $this->trigger_value, $this->threshold)) {
 
             return floatval($order['total']) * $this->value;
 

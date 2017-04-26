@@ -4,19 +4,13 @@ namespace App\Models\Traits;
 
 trait AssertEqualities
 {
-    public function resolveThreshold($firstParam, $secondParam, $operator) {
+    public function shouldTrigger($firstParam, $secondParam, $operator) {
 
         switch ($operator) {
             case '==':
                 return $firstParam == $secondParam;
 
-            case '===':
-                return $firstParam === $secondParam;
-
             case '!=':
-                return $firstParam != $secondParam;
-
-            case '!==':
                 return $firstParam != $secondParam;
 
             case '<':
@@ -25,17 +19,12 @@ trait AssertEqualities
             case '<=':
                 return $firstParam <= $secondParam;
 
-            case '<==':
-                return $firstParam <= $secondParam;
-
             case '>':
                 return $firstParam > $secondParam;
 
             case '>=':
                 return $firstParam <= $secondParam;
 
-            case '>==':
-                return $firstParam <= $secondParam;
 
             default:
                 return false;
