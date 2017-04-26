@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\AssertEqualities;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Discount extends Model {
+
+    use AssertEqualities;
 
     protected $fillable = [
         'name',
@@ -36,7 +40,6 @@ class Discount extends Model {
 
         $resolverName = camel_case('resolve_'.$this->type);
 
-
         try {
 
             return $this->$resolverName($order);
@@ -54,7 +57,7 @@ class Discount extends Model {
 
         if ($customer->revenue >= $this->trigger_value) {
 
-            return floatval($order['total']) * $this->value_in_percent / 100;
+            return floatval($order['total']) * $this->value;
         }
 
         return 0;
@@ -83,7 +86,7 @@ class Discount extends Model {
             return $total;
 
         }, 0);
-        
+
 
         $item = $items->first();
 
@@ -118,9 +121,19 @@ class Discount extends Model {
 
         }
 
+        //dd($totalQuantity, $this->trigger_value, $this->threshold);
+
+        /*if ($this->resolveThreshold($totalQuantity, $this->trigger_value, $this->threshold)) {
+
+            return $item['unit-price'] * $affectedItems * $this->value;
+
+        }*/
+
+        //dd($totalQuantity, $this->trigger_value, $this->threshold);
+
         if ($totalQuantity > $this->trigger_value) {
 
-            return $item['unit-price'] * $affectedItems * $this->value_in_percent / 100;
+            return $item['unit-price'] * $affectedItems * $this->value;
         }
 
         return 0;
@@ -129,11 +142,18 @@ class Discount extends Model {
 
     public function resolveTotalValue($order)
     {
-        if (floatval($order['total']) >= $this->trigger_value) {
 
-            return floatval($order['total']) * $discount->value_in_percent / 100;
+        if ($this->resolveThreshold(floatval($order['total']), $this->trigger_value, $this->threshold)) {
+
+            return floatval($order['total']) * $this->value;
 
         }
+
+        /*if (floatval($order['total']) >= $this->trigger_value) {
+
+            return floatval($order['total']) * $this->value;
+
+        }*/
 
         return 0;
     }
@@ -146,13 +166,24 @@ class Discount extends Model {
 
     public function getTriggerValueAttribute()
     {
-        if ($this->type === 'product_type' || $this->type === 'product_type') {
+        if ($this->type === 'product_type' || $this->type === 'product') {
 
             return round($this->trigger_value_in_cents / 100);
 
         }
 
         return $this->trigger_value_in_cents / 100;
+    }
+
+    public function getValueAttribute()
+    {
+        if (is_null($this->value_in_percent)) {
+
+            return 0;
+
+        }
+
+        return $this->value_in_percent / 100;
     }
 
 }
