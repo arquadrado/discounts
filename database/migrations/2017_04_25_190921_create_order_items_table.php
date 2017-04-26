@@ -17,20 +17,20 @@ class CreateOrderItemsTable extends Migration
 
             $table->increments('id');
 
-            $table->string('product-id');
+            $table->string('product_id')->nullable();
 
-            $table->integer('order-id')->unsigned();
+            $table->integer('order_id')->unsigned()->nullable();
             $table->integer('quantity')->unsigned();
 
-            $table->string('unit-price');
-            $table->integer('unit_price_in_cents')->unsigned();
-            $table->integer('total_in_cents')->unsigned();
+            $table->string('unit_price')->nullable();
+            $table->integer('unit_price_in_cents')->unsigned()->nullable();
+            $table->integer('total_in_cents')->unsigned()->nullable();
 
             $table->timestamps();
 
-            /*$table->foreign('product-id')->references('product_id')->on('products')->onDelete('cascade');
+            $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
 
-            $table->foreign('order-id')->references('id')->on('orders')->onDelete('cascade');*/
+            $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
         });
     }
 
@@ -42,8 +42,8 @@ class CreateOrderItemsTable extends Migration
     public function down()
     {
         Schema::drop('order_items', function(Blueprint $table) {
-            //$table->dropForeign('productid_order_items_foreign');
-            //$table->dropForeign('order-id_order_items_foreign');
+            $table->dropForeign('product_id_order_items_foreign');
+            $table->dropForeign('order_id_order_items_foreign');
         });
     }
 }

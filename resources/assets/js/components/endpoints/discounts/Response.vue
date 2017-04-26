@@ -4,7 +4,7 @@
         <div class="col-xs-12 discounts">
             <h3>Applied discounts</h3>
             <hr>
-            <div v-for="discount in response.discounts" class="row discount">
+            <div v-for="discount in response.display_discounts" class="row discount">
                 <div class="col-xs-12">
                     <span>{{ discount }}</span>
                 </div>
@@ -14,11 +14,11 @@
 
             <div class="row">
                 <div class="col-xs-4">
-                    <span><strong>Total w/o discount: </strong>{{ response.total }}</span>
+                    <span><strong>Total w/o discount: </strong>{{ totalWithoutDiscount }}</span>
                 </div>
 
                 <div class="col-xs-4">
-                    <span><strong>Total discount: </strong>{{ response.discount }}</span>
+                    <span><strong>Total discount: </strong>{{ totalDiscount }}</span>
                 </div>
 
                 <div class="col-xs-4">
@@ -33,10 +33,11 @@
 <script>
 
 
-
+import numbers from '../../../mixins/numbers.js'
 
     export default {
         props: ['response'],
+        mixins: [numbers],
         components: {
             
         },
@@ -53,9 +54,18 @@
                 return this.response.status === 'success'
             },
 
+            totalWithoutDiscount () {
+                return this.round(Number(this.response.total))
+            },
+
             totalWithDiscount () {
-                return Number(this.response.total) - Number(this.response.discount)
+                return this.round(Number(this.response.total) - Number(this.response.discount))
+            },
+
+            totalDiscount () {
+                return this.round(this.response.discount)
             }
+
         },
 
         methods: {

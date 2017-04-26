@@ -116,7 +116,7 @@ class DiscountTest extends TestCase
             'value_in_percent' => 20,
             'type' => 'product_type',
             'trigger_value_in_cents' => 200,
-            'threshold' => '=>',
+            'threshold' => '>=',
             'target' => 'item',
             'product_category_id' => 1,
             'product_id' => null,
@@ -231,16 +231,16 @@ class DiscountTest extends TestCase
 
         	foreach ($this->orders as $order) {
         		$createdOrder = factory(\App\Models\Order::class)->create([
-        			'customer-id' => $order['customer-id'],
+        			'customer_id' => $order['customer-id'],
         			'total_in_cents' => (int)floor(floatval($order['total']) * 100)
         		]);
 
         		foreach ($order['items'] as $item) {
 					factory(\App\Models\OrderItem::class)->create([
-	        			'product-id' => $item['product-id'],
-	        			'order-id' => $createdOrder->id,
+	        			'product_id' => $item['product-id'],
+	        			'order_id' => $createdOrder->id,
 	        			'quantity' => $item['quantity'],
-	        			'unit-price' => $item['unit-price'],
+	        			'unit_price' => $item['unit-price'],
 	        			'unit_price_in_cents' => (int)floor(floatval($item['unit-price']) * 100),
 	        			'total_in_cents' => (int)floor(floatval($item['total']) * 100)
 	        		]);        			
@@ -269,9 +269,9 @@ class DiscountTest extends TestCase
 
 		$orderC = json_decode(file_get_contents(storage_path('mock_data/order3.json')), true);*/
 
-		$orderA = Order::find(1)->toArray();
-		$orderB = Order::find(2)->toArray();
-		$orderC = Order::find(3)->toArray();
+		$orderA = Order::find(1);
+		$orderB = Order::find(2);
+		$orderC = Order::find(3);
 
 		$this->assertEquals($apiManager->applyDiscounts($orderA)['discount'], 4.99);
 

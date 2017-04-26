@@ -94,9 +94,13 @@ import orderThree from '../../mocks/example-orders/order3.json'
 import Order from './discounts/Order.vue'
 import Response from './discounts/Response.vue'
 
+import numbers from '../../mixins/numbers.js'
+
     export default {
 
         props: ['endpoint'],
+
+        mixins: [numbers],
 
         components: {
             'order': Order,
@@ -110,7 +114,7 @@ import Response from './discounts/Response.vue'
 
                 selectedOrder: null,
                 composedOrder: {
-                    'customer-id': null,
+                    'customer_id': null,
                     'items': [],
                     'total': null
                 },
@@ -118,8 +122,8 @@ import Response from './discounts/Response.vue'
                 selectedProduct: null,
                 selectedCustomer: null,
 
-                products: [],
-                customers: [],
+                products: products,
+                customers: customers,
                 orders: [],
 
                 response: null
@@ -134,7 +138,7 @@ import Response from './discounts/Response.vue'
 
             canSubmit () {
 
-                return  this.selectedOrder !== null && this.selectedOrder['customer-id'] !== null && this.selectedOrder['items'].length  
+                return  this.selectedOrder !== null && this.selectedOrder['customer_id'] !== null && this.selectedOrder['items'].length  
             },
 
             orderToSubmit () {
@@ -159,8 +163,7 @@ import Response from './discounts/Response.vue'
 
                 this.selectedOrder = order
                 this.selectedCustomer = this.customers.reduce((reduced, customer) => {
-
-                    if (customer.id === order['customer-id']) {
+                    if (customer.id == order['customer_id']) {
                         reduced = customer
                     }   
 
@@ -177,10 +180,10 @@ import Response from './discounts/Response.vue'
 
                 this.selectedOrder['items'].forEach((item) => {
 
-                    if (item['product-id'] === this.selectedProduct.id) {
+                    if (item['product_id'] === this.selectedProduct.id) {
 
                         item.quantity++ 
-                        item.total = Number(item.total) + Number(this.selectedProduct.price) 
+                        item.total = this.round(Number(item.total) + Number(this.selectedProduct.price), 2) 
                         added = true
 
                     }
@@ -189,8 +192,8 @@ import Response from './discounts/Response.vue'
                 if (!added) {
 
                     this.selectedOrder['items'].push({
-                        'product-id': this.selectedProduct.id,
-                        'unit-price': this.selectedProduct.price,
+                        'product_id': this.selectedProduct.id,
+                        'unit_price': this.selectedProduct.price,
                         'quantity': 1,
                         'total': this.selectedProduct.price
                     })
@@ -237,9 +240,6 @@ import Response from './discounts/Response.vue'
                     } 
                 })
                 .done((response, status) => {
-
-                    console.log(response, 'success', status) 
-
                     this.response = response
                     this.response.status = status
 
@@ -248,7 +248,6 @@ import Response from './discounts/Response.vue'
 
                     this.response = response
                     this.response.status = status
-                    console.log(response, 'fail')
 
                 })
             }
@@ -257,16 +256,19 @@ import Response from './discounts/Response.vue'
 
         watch: {
             'selectedCustomer': function () {
-                this.selectedOrder['customer-id'] = this.selectedCustomer.id
+                this.selectedOrder['customer_id'] = this.selectedCustomer.id
             }
         },
 
         mounted() {
-            this.products = products
-            this.customers = customers
-            this.orders.push(orderOne)
-            this.orders.push(orderTwo)
-            this.orders.push(orderThree)
+            
+             $.get('/api/orders', (response) => {
+                this.orders = response 
+            }).fail((response) => {
+                console.log(response, 'fail')
+
+            })
+
 
         }
     }

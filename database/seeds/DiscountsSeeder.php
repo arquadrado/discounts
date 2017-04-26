@@ -52,7 +52,7 @@ class DiscountsSeeder extends Seeder
                 'value_in_percent' => 20,
                 'type' => 'product_type',
                 'trigger_value_in_cents' => 200,
-                'threshold' => '=>',
+                'threshold' => '>=',
                 'target' => 'item',
                 'product_category_id' => 1,
                 'product_id' => null,

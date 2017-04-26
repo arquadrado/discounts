@@ -3,6 +3,8 @@
 namespace App\Support\Api;
 
 use App\Models\Discount;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Routing\RouteCollection;
 
 class ApiManager
@@ -44,17 +46,20 @@ class ApiManager
 
 	}
 
-	public function processOrder($order)
+	public function processOrder($orderInfo)
 	{
 		try {
 
+			$order = $this->getOrder($orderInfo);
+
 			$processedOrder['body'] = $this->applyDiscounts($order);
+
 			$processedOrder['status'] = 200;
 
 		} catch (\Exception $e) {
 
 			dd($e);
-			$processedOrder['body'] = $order;
+			$processedOrder['body'] = $orderInfo;
 
 			$processedOrder['status'] = 500;
 
@@ -63,44 +68,64 @@ class ApiManager
 		return $processedOrder;
 	}
 
-	public function applyDiscounts($order)
+	public function applyDiscounts(Order $order)
 	{
 
-		$discounts = Discount::where('active', 1)->orderBy('priority', 'desc')->get();
+		return Discount::where('active', 1)
+			->orderBy('priority', 'desc')
+			->get()
+			->reduce(function ($order, $discount) {
 
-		return $discounts->reduce(function ($order, $discount) {
+				if (!$order->canHaveDiscount()) {
+					return $order;
+				}
 
-			if (array_key_exists('has_discount', $order) && $order['has_discount']) {
+
+				$discountValue = $discount->resolve($order);
+
+				if ($discountValue) {
+
+					$order->addDiscount($discount->description);
+
+					$order->setHasDiscount($discount->cumulative === 1 ? false : true);
+
+				}
+
+				$order->discount += $discountValue;
 
 				return $order;
 
+			}, $order);
+
+	}
+
+	public function getOrder($orderInfo)
+	{
+
+		if (isset($orderInfo['id'])){
+
+			$order = Order::find($orderInfo['id']);
+		}
+
+		if (!isset($orderInfo['id']) || is_null($order)) {
+			$order = Order::create([
+				'customer_id' => $orderInfo['customer_id'],
+    			'total_in_cents' => (int)floor(floatval($orderInfo['total']) * 100)
+			]);				
+
+			foreach ($orderInfo['items'] as $item) {
+				OrderItem::create([
+        			'product_id' => $item['product_id'],
+        			'order_id' => $order->id,
+        			'quantity' => $item['quantity'],
+        			'unit_price' => $item['unit_price'],
+        			'unit_price_in_cents' => (int)floor(floatval($item['unit_price']) * 100),
+        			'total_in_cents' => (int)floor(floatval($item['total']) * 100)
+        		]);
 			}
+		}
 
-			if (!array_key_exists('discount', $order)) {
 
-				$order['discount'] = 0;
-
-			}
-
-			$discountValue = $discount->resolve($order);
-
-			if ($discountValue) {
-
-				if (!array_key_exists('discounts', $order)) {
-					$order['discounts'] = [];
-				}
-
-				array_push($order['discounts'], $discount->description);
-
-				$order['has_discount'] = $discount->cumulative === 1 ? false : true;
-
-			}
-
-			$order['discount'] += $discountValue;
-
-			return $order;
-
-		}, $order);
-
+		return $order;
 	}
 }

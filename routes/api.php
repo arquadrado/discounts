@@ -18,5 +18,6 @@ Route::get('/', 'Api\ApiController@availableEndpoints')->name('api-root');
 
 Route::post('/discounts', 'Api\ApiController@processOrder')->name('discounts');
 
+Route::get('/orders', 'Api\ApiController@getOrders')->name('orders');
 
 

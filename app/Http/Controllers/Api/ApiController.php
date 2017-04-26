@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Order;
 use App\Http\Controllers\Controller;
 use App\Support\Api\ApiManager;
 
@@ -56,5 +57,10 @@ class ApiController extends Controller
 
 
         return response()->json($processedOrder['body'], $processedOrder['status']);
+    }
+
+    public function getOrders()
+    {
+        return Order::get();
     }
 }

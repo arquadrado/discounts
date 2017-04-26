@@ -10,6 +10,11 @@ class Discount extends Model {
 
     use AssertEqualities;
 
+    const TYPE_CUSTOMER_REVENUE = 'customer_revenue';
+    const TYPE_TOTAL_VALUE = 'total_value';
+    const TYPE_PRODUCT_CATEGORY = 'product_category';
+    const TYPE_PRODUCT = 'product';
+
     protected $fillable = [
         'name',
         'value_in_percent',
@@ -23,12 +28,6 @@ class Discount extends Model {
         'cumulative'
     ];
 
-    protected $types = [
-        'customer_revenue',
-        'total_value',
-        'product_category',
-        'product'
-    ];
 
     /*
     ==========================================================================
@@ -53,11 +52,16 @@ class Discount extends Model {
 
     public function resolveCustomerRevenue($order)
     {
-        $customer = Customer::find($order['customer-id']);
+        $customer = Customer::find($order->customer_id);
 
-        if ($customer->revenue >= $this->trigger_value) {
 
-            return floatval($order['total']) * $this->value;
+        if (is_null($customer)) {
+            return 0;
+        }
+
+        if ($this->shouldTrigger($customer->revenue, $this->trigger_value, $this->threshold)) {
+
+            return floatval($order->total) * $this->value;
         }
 
         return 0;
@@ -65,11 +69,12 @@ class Discount extends Model {
 
     public function resolveProductType($order)
     {
+        $products = Product::get();
 
-        $items = collect($order['items'])->filter(function ($item) use ($order) {
+        $items = $order->items->filter(function ($item) use ($products) {
 
 
-            $product = Product::where('product_id', $item['product-id'])->first();
+            $product = $products->where('product_id', $item->product_id)->first();
 
 
             if (is_null($product)) {
@@ -83,7 +88,7 @@ class Discount extends Model {
 
         $totalQuantity = $items->reduce(function ($total, $item) {
 
-            $total = $total + (int)$item['quantity'];
+            $total += (int)$item->quantity;
 
             return $total;
 
@@ -91,6 +96,10 @@ class Discount extends Model {
 
 
         $item = $items->first();
+
+        if (is_null($item)) {
+            return 0;
+        }
 
         if (!is_null($this->target)) {
 
@@ -106,7 +115,7 @@ class Discount extends Model {
                         $reduced = $item;
                     }
 
-                    $reduced = $reduced['unit-price'] < $item['unit-price'] ? $reduced : $item;
+                    $reduced = $reduced->unit_price < $item->unit_price ? $reduced : $item;
 
                     return $reduced;
 
@@ -125,15 +134,10 @@ class Discount extends Model {
 
         if ($this->shouldTrigger($totalQuantity, $this->trigger_value, $this->threshold)) {
 
-            return $item['unit-price'] * $affectedItems * $this->value;
+            return $item->unit_value * $affectedItems * $this->value;
 
         }
 
-        /*if ($totalQuantity > $this->trigger_value) {
-
-            return $item['unit-price'] * $affectedItems * $this->value;
-        }
-*/
         return 0;
 
     }
@@ -141,17 +145,11 @@ class Discount extends Model {
     public function resolveTotalValue($order)
     {
 
-        if ($this->shouldTrigger(floatval($order['total']), $this->trigger_value, $this->threshold)) {
+        if ($this->shouldTrigger($order->total, $this->trigger_value, $this->threshold)) {
 
-            return floatval($order['total']) * $this->value;
+            return $order->total * $this->value;
 
         }
-
-        /*if (floatval($order['total']) >= $this->trigger_value) {
-
-            return floatval($order['total']) * $this->value;
-
-        }*/
 
         return 0;
     }
@@ -164,7 +162,7 @@ class Discount extends Model {
 
     public function getTriggerValueAttribute()
     {
-        if ($this->type === 'product_type' || $this->type === 'product') {
+        if ($this->type === self::TYPE_PRODUCT_CATEGORY || $this->type === self::TYPE_PRODUCT) {
 
             return round($this->trigger_value_in_cents / 100);
 

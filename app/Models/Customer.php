@@ -6,13 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model {
 
-    protected $fillable = [
+	protected $fillable = [
         'name',
         'since',
         'revenue_in_dmcents'
     ];
-
-
+    
      /*
     ==========================================================================
        Mutators

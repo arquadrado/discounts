@@ -40,7 +40,7 @@
                             <li v-for="item in order.items">
                                 <div class="row">
                                     <div class="col-xs-3">{{ resolveProductName(item) }}</div>
-                                    <div class="col-xs-3">{{ item['unit-price'] }}</div>
+                                    <div class="col-xs-3">{{ item['unit_price'] }}</div>
                                     <div class="col-xs-3">{{ item.quantity }}</div>
                                     <div class="col-xs-3">{{ item.total }}</div>
                                 </div>
@@ -70,11 +70,12 @@
 
 <script>
 
-
+import numbers from '../../../mixins/numbers.js'
 
 
     export default {
         props: ['customer', 'order', 'products'],
+        mixins: [numbers],
         components: {
             
         },
@@ -94,7 +95,7 @@
         methods: {
             resolveProductName (item) {
                 return this.products.reduce((reduced, product) => {
-                    if (product.id === item['product-id']) {
+                    if (product.id === item['product_id']) {
                         reduced = product.description
                     }
                     return reduced

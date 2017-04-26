@@ -7,12 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class OrderItem extends Model {
 
     protected $fillable = [
-        'product-id',
+        'product_id',
+        'order_id',
         'quantity',
-        'unit-price',
-        'total'
+        'unit_price',
+        'unit_price_in_cents',
+        'total_in_cents'
     ];
 
+    protected $appends = [
+        'total'
+    ]; 
 
     public function order()
     {
@@ -24,9 +29,20 @@ class OrderItem extends Model {
         return $this->belongsTo(Product::class);
     }
 
+    /*
+    ==========================================================================
+       Mutators
+    ==========================================================================
+    */
+
     public function getTotalAttribute()
     {
         return $this->total_in_cents / 100;
+    }
+
+    public function getUnitValueAttribute()
+    {
+        return $this->unit_price_in_cents / 100;
     }
 
 

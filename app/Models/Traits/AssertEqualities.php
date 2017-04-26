@@ -23,7 +23,7 @@ trait AssertEqualities
                 return $firstParam > $secondParam;
 
             case '>=':
-                return $firstParam <= $secondParam;
+                return $firstParam >= $secondParam;
 
 
             default:

@@ -24,11 +24,13 @@
 <script>
 
 import Discounts from './endpoints/Discounts.vue'
+import Orders from './endpoints/Orders.vue'
 
 
     export default {
         components: {
-            'discounts': Discounts
+            'discounts': Discounts,
+            'orders': Orders,
         },
         data: () => {
             return {
