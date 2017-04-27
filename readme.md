@@ -42,7 +42,7 @@ The app is up and running.
 
 ## Testing
 
-The app's main functionalities (that being the calculating the discounts to given orders) via phpunit.
+The app's main functionalities (that being calculating the discounts to given orders) can be tested via phpunit.
 
 To use a test environment that will not interfere with the app's main configurations, create a `.env.testing` file where define the app's db for tests. If you fail to provide a testing DB, the app will try to run the tests using your main DB which can cause if the DB is already seeded.
 
