@@ -14,7 +14,7 @@ This is a Laravel based microservice that calculates the discounts to apply to a
 
 4. Set permissions as necessary
 
-Example OSX
+Example OSX with Apache
 
 `chgrp -R _www project-directory/storage`
 
