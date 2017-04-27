@@ -54,7 +54,7 @@ class OrdersSeeder extends Seeder
                     ],
                     [
                       'product-id' => 'A102',
-                      'quantity' => 2,
+                      'quantity' => 1,
                       'unit-price' => '49.50',
                       'total' => '49.50'
                     ]
