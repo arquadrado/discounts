@@ -75,6 +75,7 @@ After receiving the order, the app will proceed to load all the active discounts
 - `value_in_percent` - Value in percentage that will be used to calculate the discount value
 - `type` - This is the type of discount and it will determine how the discount is applied to an order. There are 3 implemented types of discount, `customer_revenue`, that will apply the discount based on the customer total revenue, `product_type`, that will apply the discount based on the product category and `total_value`, that will apply the discount based on the order total value.
 - `trigger_value_in_cents` - value that will trigger the discount. This value is in cents so it can avoid errors due to floats inaccuracies. If the discount type if of  `product_type`, this value will be converted to an absolute value.
+- `threshold` - defines how the trigger value should evaluate. Possible values are `>`, `<`, `>=`, `<=`, `==`.
 - `target` - represents the target of the discount within a given order. This can be `total` or `item`. For `item` futher options can be specified with `|`. In the this case only `item|min` is implemented. This option will target the cheapest item.
 - `product_category_id` - specifies the category of products to which a discount should apply. If not a product discount, should be null.
 - `product_id` - specifies a specific product to apply the discount.
