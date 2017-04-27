@@ -97,6 +97,7 @@ class Discount extends Model {
 
         $item = $items->first();
 
+
         if (is_null($item)) {
             return 0;
         }

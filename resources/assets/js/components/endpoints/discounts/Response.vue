@@ -6,7 +6,7 @@
             <hr>
             <div v-for="discount in response.display_discounts" class="row discount">
                 <div class="col-xs-12">
-                    <span>{{ discount }}</span>
+                    <span><strong>Description: </strong>{{ discount.description }}</span><span> | </span><span><strong>Value: </strong>{{ round(discount.value) }}</span>
                 </div>
             </div>
 
@@ -59,11 +59,11 @@ import numbers from '../../../mixins/numbers.js'
             },
 
             totalWithDiscount () {
-                return this.round(Number(this.response.total) - Number(this.response.discount))
+                return this.round(Number(this.response.total) - Number(this.response.display_total_discount))
             },
 
             totalDiscount () {
-                return this.round(this.response.discount)
+                return this.round(this.response.display_total_discount)
             }
 
         },

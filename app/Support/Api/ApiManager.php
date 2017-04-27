@@ -40,11 +40,23 @@ class ApiManager
 
 	}
 
+	/*
+    ==========================================================================
+       Lists all api endpoints
+    ==========================================================================
+    */
+
 	public function getEndpoints()
 	{
 		return $this->routes;
 
 	}
+
+	/*
+    ==========================================================================
+       Process incoming order
+    ==========================================================================
+    */
 
 	public function processOrder($orderInfo)
 	{
@@ -68,6 +80,12 @@ class ApiManager
 		return $processedOrder;
 	}
 
+	/*
+    ==========================================================================
+       Resolve discounts to be applied
+    ==========================================================================
+    */
+
 	public function applyDiscounts(Order $order)
 	{
 
@@ -85,19 +103,25 @@ class ApiManager
 
 				if ($discountValue) {
 
-					$order->addDiscount($discount->description);
+					$order->addDiscount([
+						'value' => $discountValue,
+						'description' => $discount->description]);
 
-					$order->setHasDiscount($discount->cumulative === 1 ? false : true);
+					$order->setCanHaveDiscount($discount->cumulative === 1 ? false : true);
 
 				}
-
-				$order->discount += $discountValue;
 
 				return $order;
 
 			}, $order);
 
 	}
+
+	/*
+    ==========================================================================
+       Gets and previously stored order or transform the provided json order to eloquent model and returns
+    ==========================================================================
+    */
 
 	public function getOrder($orderInfo)
 	{

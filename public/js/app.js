@@ -2249,10 +2249,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return this.round(Number(this.response.total));
         },
         totalWithDiscount: function totalWithDiscount() {
-            return this.round(Number(this.response.total) - Number(this.response.discount));
+            return this.round(Number(this.response.total) - Number(this.response.display_total_discount));
         },
         totalDiscount: function totalDiscount() {
-            return this.round(this.response.discount);
+            return this.round(this.response.display_total_discount);
         }
     },
 
@@ -32527,7 +32527,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       staticClass: "row discount"
     }, [_c('div', {
       staticClass: "col-xs-12"
-    }, [_c('span', [_vm._v(_vm._s(discount))])])])
+    }, [_c('span', [_c('strong', [_vm._v("Description: ")]), _vm._v(_vm._s(discount.description))]), _c('span', [_c('strong', [_vm._v("Value: ")]), _vm._v(_vm._s(_vm.round(discount.value)))])])])
   }), _vm._v(" "), _c('hr'), _vm._v(" "), _c('div', {
     staticClass: "row"
   }, [_c('div', {

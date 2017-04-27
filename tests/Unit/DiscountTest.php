@@ -117,7 +117,7 @@ class DiscountTest extends TestCase
             'type' => 'product_type',
             'trigger_value_in_cents' => 200,
             'threshold' => '>=',
-            'target' => 'item',
+            'target' => 'item|min',
             'product_category_id' => 1,
             'product_id' => null,
             'priority' => 1,

@@ -8,7 +8,7 @@ class Order extends Model {
 
     protected $hasDiscount = false;
     protected $discounts = [];
-    protected $totalDiscount = 0;
+    protected $discount = 0;
 
     protected $fillable = [
         'customer_id',
@@ -17,7 +17,8 @@ class Order extends Model {
 
     protected $appends = [
         'total',
-        'display_discounts'
+        'display_discounts',
+        'display_total_discount'
     ];
 
     protected $with = ['items'];
@@ -46,6 +47,8 @@ class Order extends Model {
     */
     public function addDiscount($discount)
     {
+        $this->discount += $discount['value'];
+
         array_push($this->discounts, $discount);
     }
 
@@ -54,7 +57,7 @@ class Order extends Model {
         $this->discount += $value;
     }
 
-    public function setHasDiscount($value)
+    public function setCanHaveDiscount($value)
     {
         $this->hasDiscount = $value;
     }
@@ -84,6 +87,11 @@ class Order extends Model {
     public function getDisplayDiscountsAttribute()
     {
         return $this->discounts;
+    }
+
+    public function getDisplayTotalDiscountAttribute()
+    {
+        return $this->discount;
     }
 
 }
