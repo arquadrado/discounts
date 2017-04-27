@@ -1,7 +1,7 @@
 <template>
     <div class="row response" :class="{'success': success}">
-        
-        <div class="col-xs-12 discounts">
+
+        <div class="col-xs-12 discounts" v-if="success">
             <h3>Applied discounts</h3>
             <hr>
             <div v-for="discount in response.display_discounts" class="row discount">
@@ -26,6 +26,9 @@
                 </div>
             </div>
         </div>
+        <div class="col-xs-12 discounts" v-else>
+            <h3>{{ response.responseJSON.error }}</h3>
+        </div>
 
     </div>
 </template>
@@ -39,11 +42,11 @@ import numbers from '../../../mixins/numbers.js'
         props: ['response'],
         mixins: [numbers],
         components: {
-            
+
         },
         data: () => {
             return {
-                
+
 
             }
         },
@@ -69,7 +72,7 @@ import numbers from '../../../mixins/numbers.js'
         },
 
         methods: {
-            
+
         }
 
     }

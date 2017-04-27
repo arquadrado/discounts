@@ -46,8 +46,8 @@ class Discount extends Model
             return $this->$resolverName($order);
 
         } catch (\Exception $e) {
-            dd($e);
-            return 0;
+
+            throw new \Exception("Error Processing Request", 1);
         }
 
     }

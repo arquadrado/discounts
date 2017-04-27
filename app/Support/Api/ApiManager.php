@@ -70,8 +70,7 @@ class ApiManager
 
 		} catch (\Exception $e) {
 
-			dd($e);
-			$processedOrder['body'] = $orderInfo;
+			$processedOrder['body'] = ['error' => $e->getMessage()];
 
 			$processedOrder['status'] = 500;
 
@@ -135,7 +134,7 @@ class ApiManager
 			$order = Order::create([
 				'customer_id' => $orderInfo['customer_id'],
     			'total_in_cents' => (int)floor(floatval($orderInfo['total']) * 100)
-			]);			
+			]);
 
 			foreach ($orderInfo['items'] as $item) {
 				OrderItem::create([
