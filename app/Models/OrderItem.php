@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class OrderItem extends Model {
+class OrderItem extends Model
+{
 
     protected $fillable = [
         'product_id',
@@ -17,7 +18,7 @@ class OrderItem extends Model {
 
     protected $appends = [
         'total'
-    ]; 
+    ];
 
     public function order()
     {
@@ -44,6 +45,4 @@ class OrderItem extends Model {
     {
         return $this->unit_price_in_cents / 100;
     }
-
-
 }

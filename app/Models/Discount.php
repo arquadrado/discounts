@@ -6,7 +6,8 @@ use App\Models\Traits\AssertEqualities;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Discount extends Model {
+class Discount extends Model
+{
 
     use AssertEqualities;
 
@@ -35,7 +36,8 @@ class Discount extends Model {
     ==========================================================================
     */
 
-    public function resolve($order) {
+    public function resolve($order)
+    {
 
         $resolverName = camel_case('resolve_'.$this->type);
 
@@ -182,5 +184,4 @@ class Discount extends Model {
 
         return $this->value_in_percent / 100;
     }
-
 }

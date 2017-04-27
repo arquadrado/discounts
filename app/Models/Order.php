@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Order extends Model {
+class Order extends Model
+{
 
     protected $hasDiscount = false;
     protected $discounts = [];
@@ -93,5 +94,4 @@ class Order extends Model {
     {
         return $this->discount;
     }
-
 }

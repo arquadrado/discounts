@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Customer extends Model {
+class Customer extends Model
+{
 
-	protected $fillable = [
+    protected $fillable = [
         'name',
         'since',
         'revenue_in_dmcents'
@@ -22,5 +23,4 @@ class Customer extends Model {
     {
         return $this->revenue_in_dmcents / 100;
     }
-
 }

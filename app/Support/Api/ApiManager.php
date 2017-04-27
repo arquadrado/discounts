@@ -10,7 +10,7 @@ use Illuminate\Routing\RouteCollection;
 class ApiManager
 {
 
-	/*
+    /*
     |--------------------------------------------------------------------------
     | Api Manager
     |--------------------------------------------------------------------------
@@ -19,16 +19,16 @@ class ApiManager
     |
     */
 
-	public function __construct()
-	{
+    public function __construct()
+    {
 
-		$this->routes = collect(app()->routes->getRoutes())->filter(function ($route) {
+	    $this->routes = collect(app()->routes->getRoutes())->filter(function ($route) {
 
-			return $route->action['prefix'] === 'api' && $route->uri !== 'api';
+		    return $route->action['prefix'] === 'api' && $route->uri !== 'api';
 
-		})->reduce(function ($reduced, $route) {
+	    })->reduce(function ($reduced, $route) {
 
-			$reduced[$route->action['as']] = [
+		    $reduced[$route->action['as']] = [
 				'uri' => $route->uri,
 				'name' => $route->action['as'],
 				'methods' => $route->methods
@@ -135,7 +135,7 @@ class ApiManager
 			$order = Order::create([
 				'customer_id' => $orderInfo['customer_id'],
     			'total_in_cents' => (int)floor(floatval($orderInfo['total']) * 100)
-			]);				
+			]);			
 
 			foreach ($orderInfo['items'] as $item) {
 				OrderItem::create([

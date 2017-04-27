@@ -49,7 +49,7 @@ class ApiController extends Controller
 
             return response()->json([
                 'message' => 'Something went wrong',
-            ], 500);            
+            ], 500);
 
         }
 
