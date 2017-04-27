@@ -12,7 +12,9 @@ This is a Laravel based microservice that calculates the discounts to apply to a
 
 3. Run `npm install`.
 
-4. Set permissions
+4. Set permissions as necessary
+
+Example OSX
 
 `chgrp -R _www project-directory/storage`
 
