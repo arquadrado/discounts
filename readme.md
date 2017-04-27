@@ -2,7 +2,7 @@
 
 ## Discounts microservice
 
-This is a Laravel based microservice that calculates the discounts to apply to a given order 
+This is a Laravel based microservice that calculates the discounts to apply to a given order
 
 ## Instalation
 
@@ -14,9 +14,9 @@ This is a Laravel based microservice that calculates the discounts to apply to a
 
 4. Set permissions
 
-`chgrp -R _www project-directory`
+`chgrp -R _www project-directory/storage`
 
-`chmod -R 755 project-directory`
+`chgrp -R _www project-directory/bootstrap`
 
 `chmod -R 775 project-directory/storage`
 
@@ -30,7 +30,7 @@ This is a Laravel based microservice that calculates the discounts to apply to a
 
 Run the migrations with `php artisan migrate`. This will create the database structure.
 
-Seed the database with the initial data by running `php artisan db:seed`. 
+Seed the database with the initial data by running `php artisan db:seed`.
 
 You can perform the two previous actions at once by running `php artisan migrate --seed`.
 
