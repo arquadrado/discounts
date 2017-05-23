@@ -44,7 +44,7 @@ The app is up and running.
 
 The app's main functionalities (that being calculating the discounts to given orders) can be tested via phpunit.
 
-To use a test environment that will not interfere with the app's main configurations, create a `.env.testing` file where define the app's db for tests. If you fail to provide a testing DB, the app will try to run the tests using your main DB which can cause if the DB is already seeded.
+To use a test environment that will not interfere with the app's main configurations, create a `.env.testing` file and define the app's db for tests. If you fail to provide a testing DB, the app will try to run the tests using your main DB which can cause problems if the DB is already seeded.
 
 With all set, just run `vendor/bin/phpunit`.
 
@@ -70,7 +70,7 @@ This discounts endpoint of the app expects and `order` in json format with the f
 }
 ```
 
-After receiving the order, the app will proceed to load all the active discounts and pass the order through them. If any discount applies to that order the value of the discount will be appended to the order, and also the description of the discount. Discounts can accumulate and have different targets. All the discounts are configurable and the are represented by entries in the database. Here's the structure of a discount:
+After receiving the order, the app will proceed to load the assigned discount service and use it process order. The default **DiscountService** will load all the active discounts and pass the order through them. If any discount applies to that order the value of the discount will be appended to the order, and also the description of the discount. Discounts can accumulate and have different targets. All the discounts are configurable and the are represented by entries in the database. Here's the structure of a discount:
 
 - `name` - Name of the discount
 - `description` - Description of the discount
@@ -88,6 +88,6 @@ After receiving the order, the app will proceed to load all the active discounts
 
 After applying the discounts the processed order will be returned in `json` format.
 
-
+Other discount services can be plugged in just by setting the `DISCOUNT_SERVICE="discount-service"` entry the .env file. The value provided to this key will be converted to studly case and the DiscountServiceProvider will try to instantiate a class with the name the resulted from the string conversion from the `App\Services` directory. This class should implement the **DiscountServiceContract** interface located in `app\Contracts`.
 
 

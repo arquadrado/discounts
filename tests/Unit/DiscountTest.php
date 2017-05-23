@@ -7,7 +7,8 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use App\Models\Order;
-use App\Support\Api\ApiManager;
+
+use App\Support\Facades\Discount;
 
 
 class DiscountTest extends TestCase
@@ -225,7 +226,7 @@ class DiscountTest extends TestCase
 	        foreach ($this->discounts as $discount) {
 	        	factory(\App\Models\Discount::class)->create($discount);
 	        }
-        } 
+        }
 
         if (!is_null($this->orders)) {
 
@@ -243,7 +244,7 @@ class DiscountTest extends TestCase
 	        			'unit_price' => $item['unit-price'],
 	        			'unit_price_in_cents' => (int)floor(floatval($item['unit-price']) * 100),
 	        			'total_in_cents' => (int)floor(floatval($item['total']) * 100)
-	        		]);        			
+	        		]);
         		}
         	}
         }
@@ -261,23 +262,16 @@ class DiscountTest extends TestCase
 			$this->assertDatabaseHas('discounts', $discount);
 		}
 
-		$apiManager = new ApiManager();
-
-		/*$orderA = json_decode(file_get_contents(storage_path('mock_data/order1.json')), true);
-
-		$orderB = json_decode(file_get_contents(storage_path('mock_data/order2.json')), true);
-
-		$orderC = json_decode(file_get_contents(storage_path('mock_data/order3.json')), true);*/
-
 		$orderA = Order::find(1);
 		$orderB = Order::find(2);
 		$orderC = Order::find(3);
 
-		$this->assertEquals($apiManager->applyDiscounts($orderA)['discount'], 4.99);
 
-		$this->assertEquals($apiManager->applyDiscounts($orderB)['discount'], 2.495);
+        $this->assertEquals(Discount::applyDiscounts($orderA)['discount'], 4.99);
 
-		$this->assertEquals($apiManager->applyDiscounts($orderC)['discount'], 1.95);
+        $this->assertEquals(Discount::applyDiscounts($orderB)['discount'], 2.495);
+
+        $this->assertEquals(Discount::applyDiscounts($orderC)['discount'], 1.95);
 
 	}
 }
