@@ -54,12 +54,29 @@ class Discount extends Model
 
     public function resolveCustomerRevenue($order)
     {
+        /*
+        ==========================================================================
+           Finds the customer to which the order belongs
+        ==========================================================================
+        */
         $customer = Customer::find($order->customer_id);
 
-
+        
+        /*
+        ==========================================================================
+           This discount will return zero if the no customer is found
+        ==========================================================================
+        */
         if (is_null($customer)) {
             return 0;
         }
+        
+        
+        /*
+        ==========================================================================
+           Otherwise it will be checked if the value of the customer revenue should trigger the discount and apply the discount if so
+        ==========================================================================
+        */
 
         if ($this->shouldTrigger($customer->revenue, $this->trigger_value, $this->threshold)) {
 
@@ -71,8 +88,20 @@ class Discount extends Model
 
     public function resolveProductType($order)
     {
+        
+        /*
+        ==========================================================================
+           Gets all the products in the database
+        ==========================================================================
+        */
         $products = Product::get();
-
+        
+        
+        /*
+        ==========================================================================
+           Filter the items in the orders to get only the ones that are from the desired category
+        ==========================================================================
+        */
         $items = $order->items->filter(function ($item) use ($products) {
 
 
@@ -87,7 +116,11 @@ class Discount extends Model
             return $product->category->id == $this->product_category_id;
         });
 
-
+        /*
+        ==========================================================================
+           Gets the total quantity of products of the desired category
+        ==========================================================================
+        */
         $totalQuantity = $items->reduce(function ($total, $item) {
 
             $total += (int)$item->quantity;
@@ -96,14 +129,30 @@ class Discount extends Model
 
         }, 0);
 
-
+         /*
+        ==========================================================================
+           At this point there is no information about what product of the category should the discount apply so the first one is selected
+        ==========================================================================
+        */
         $item = $items->first();
 
-
+         /*
+        ==========================================================================
+           If there are no items the discount will evaluate to zero and return
+        ==========================================================================
+        */
         if (is_null($item)) {
             return 0;
         }
-
+        
+        /*
+        ==========================================================================
+           Here we will be checking if there is a more specific target among the set of products
+           The options can be defined by setting them in the discount target column
+           At this point only 'min' is implemented
+           This option will target the product of the set that has the lowest value
+        ==========================================================================
+        */
         if (!is_null($this->target)) {
 
             $exploded = explode('|', $this->target);
@@ -126,6 +175,14 @@ class Discount extends Model
             }
 
         }
+        
+        /*
+        ==========================================================================
+           Here we'll start be set the number of items affected by the discount to one as default
+           If the discount as the attribute 'repeat' set to true, this means that this discount can be applied
+           as long as there are items in enough quantity to meet the trigger value multiple times
+        ==========================================================================
+        */
 
         $affectedItems = 1;
 
@@ -147,7 +204,11 @@ class Discount extends Model
 
     public function resolveTotalValue($order)
     {
-
+        /*
+        ==========================================================================
+           Checks if the order value reaches the trigger value and return the discount value accordingly
+        ==========================================================================
+        */
         if ($this->shouldTrigger($order->total, $this->trigger_value, $this->threshold)) {
 
             return $order->total * $this->value;
