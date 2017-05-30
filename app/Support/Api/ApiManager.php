@@ -66,7 +66,6 @@ class ApiManager
 
 			$order = $this->getOrder($orderInfo);
 
-            //$processedOrder['body'] = $this->applyDiscounts($order);
 			$processedOrder['body'] = Discount::applyDiscounts($order);
 
 			$processedOrder['status'] = 200;
